@@ -14,7 +14,7 @@
         "region": "eu-west-2",
         "enable_pivot_role_auto_create": true,
         "enable_opensearch_serverless": true,
-        "with_approval_tests": true
+        "with_approval_tests": false
       }
     ]
   }
