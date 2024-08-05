@@ -8,16 +8,16 @@ import {
   Typography
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import React from 'react';
 import * as FaIcons from 'react-icons/fa';
-import * as FiIcons from 'react-icons/fi';
 import { useNavigate } from 'react-router';
 import { IconAvatar, useCardStyle } from 'design';
+import { BallotOutlined } from '@mui/icons-material';
 
 export const MetadataFormListItem = (props) => {
-  const { metadata_form } = props;
+  const { metadata_form, visibilityDict } = props;
   const classes = useCardStyle();
   const navigate = useNavigate();
+
   return (
     <Grid item key={metadata_form.uri} md={3} xs={12} {...props}>
       <Card key={metadata_form.uri} className={classes.card} raised>
@@ -30,24 +30,26 @@ export const MetadataFormListItem = (props) => {
                   display: 'flex'
                 }}
               >
-                <IconAvatar icon={<FiIcons.FiPackage size={18} />} />
-                <Box sx={{ ml: 2 }}>
+                <IconAvatar icon={<BallotOutlined size={18} />} />
+                <Box
+                  sx={{
+                    ml: 2,
+                    whiteSpace: 'nowrap',
+                    alignItems: 'left'
+                  }}
+                >
                   <Link
                     underline="hover"
                     component="button"
                     color="textPrimary"
                     variant="h6"
                     onClick={() => {
-                      navigate(`/console/s3-datasets/${metadata_form.uri}`);
+                      navigate(`/console/metadata-forms/${metadata_form.uri}`);
                     }}
                     sx={{
-                      width: '99%',
-                      whiteSpace: 'nowrap',
-                      alignItems: 'left',
+                      maxWidth: '200px',
                       overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      WebkitBoxOrient: 'vertical',
-                      WebkitLineClamp: 2
+                      textOverflow: 'ellipsis'
                     }}
                   >
                     <Tooltip title={metadata_form.name}>
@@ -55,13 +57,13 @@ export const MetadataFormListItem = (props) => {
                     </Tooltip>
                   </Link>
                   <Typography color="textSecondary" variant="body2">
-                    by{' '}
+                    owned by{' '}
                     <Link
-                      underline="hover"
                       color="textPrimary"
                       variant="subtitle2"
+                      underline="false"
                     >
-                      {metadata_form.owner}
+                      {metadata_form.SamlGroupName}
                     </Link>
                   </Typography>
                 </Box>
@@ -79,7 +81,6 @@ export const MetadataFormListItem = (props) => {
             color="textSecondary"
             variant="body2"
             sx={{
-              width: '200px',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -99,13 +100,13 @@ export const MetadataFormListItem = (props) => {
         <Box
           sx={{
             px: 3,
-            py: 0.5
+            py: 1
           }}
         >
           <Grid container>
             <Grid item md={4} xs={12}>
               <Typography color="textSecondary" variant="body2">
-                <FaIcons.FaUsersCog /> Team
+                <FaIcons.FaEye /> Visibility
               </Typography>
             </Grid>
             <Grid item md={8} xs={12}>
@@ -121,32 +122,64 @@ export const MetadataFormListItem = (props) => {
                   WebkitLineClamp: 2
                 }}
               >
-                <Tooltip title={metadata_form.SamlGroupName || '-'}>
-                  <span>{metadata_form.SamlGroupName || '-'}</span>
+                <Tooltip title={metadata_form.visibility || '-'}>
+                  <span>{metadata_form.visibility || '-'}</span>
                 </Tooltip>
               </Typography>
             </Grid>
           </Grid>
         </Box>
-        <Box
-          sx={{
-            px: 3,
-            py: 1
-          }}
-        >
-          <Grid
-            alignItems="center"
-            container
-            key={metadata_form.visibility}
-            justifyContent="space-between"
-            spacing={3}
-          />
-        </Box>
+        {metadata_form.visibility !== visibilityDict.Global && (
+          <Box
+            sx={{
+              px: 3,
+              py: 0.5
+            }}
+          >
+            <Grid container>
+              <Grid item md={4} xs={12}>
+                <Typography color="textSecondary" variant="body2">
+                  <FaIcons.FaUsersCog />{' '}
+                  {Object.keys(visibilityDict).find(
+                    (key) => visibilityDict[key] === metadata_form.visibility
+                  )}
+                </Typography>
+              </Grid>
+              <Grid item md={8} xs={12}>
+                <Typography
+                  color="textPrimary"
+                  variant="body2"
+                  sx={{
+                    width: '200px',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    WebkitBoxOrient: 'vertical',
+                    WebkitLineClamp: 2
+                  }}
+                >
+                  <Tooltip title={metadata_form.homeEntity || '-'}>
+                    <Link
+                      color="textPrimary"
+                      variant="subtitle2"
+                      underline="false"
+                      sx={{ overflow: 'hidden', textOverflow: 'ellipsis' }}
+                    >
+                      {metadata_form.homeEntityName || '-'}
+                    </Link>
+                  </Tooltip>
+                </Typography>
+              </Grid>
+            </Grid>
+          </Box>
+        )}
+
         <Divider />
       </Card>
     </Grid>
   );
 };
 MetadataFormListItem.propTypes = {
-  metadata_form: PropTypes.object.isRequired
+  metadata_form: PropTypes.object.isRequired,
+  visibilityDict: PropTypes.object.isRequired
 };
